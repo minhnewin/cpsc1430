@@ -1,0 +1,163 @@
+// NAME:     Minh Nguyen
+// FILENAME: p2.cpp
+// DATE:     April 20, 2021
+// PURPOSE:  The game of Hangman is a popular game which consists of
+//           guessing a word or phrase by choosing letters and finding
+//           out if the letter is contained in the word or phrase and
+//           where it is located. The game will update statistics based
+//           on user input and will ask if user wants to keep playing.
+// INPUT:    Reads in file containing random words. Reads in alphabetic
+//           letters from user input.
+// PROCESS:  The user will be prompted by a welcome message. Once they
+//           have chosen to play, they must input a file containing a list
+//           of words all in uppercase letters with no more than 100 words.
+//           A word is chosen at random until all of the words have been used
+//           or until the user chooses to quit. When the game begins an empty
+//           noose is displayed with a series of separated underscore
+//           characters that indicate the number of letters in the word to
+//           be guessed and a list of the available letters of the alphabet.
+//           As the user guesses a letter, the displayGame function checks to
+//           see if the letter is in the word or not and if the letter is not
+//           in the word, a single "body part" on the hangman's noose is
+//           displayed in the following order: head, neck, one arm, other arm,
+//           torso, one leg, other leg. If the letter is in the word, it
+//           replaces an underscore with the properly guessed letter AND
+//           removes the used letter from the available list. If a letter
+//           appears more than once in the word, it will replace more than
+//           one underscore. This continues until the user runs out of body
+//           parts or completes the word. Provide a message indicating that
+//           the word was guessed correctly (or not). In either scenario,
+//           display the word to the user. Repeat as long as the user wishes
+//           to play or until the words run out, keeping track of the number
+//           of wins and losses. Statistics should be displayed before each
+//           game play. Display the statistics a final time after deciding
+//           not to continue playing the game. The user will see a short
+//           goodbye message after the user decides to stop playing the game.
+// OUTPUT:   User will be welcomed with a welcome message and will be prompted
+//           to input a file containing words to play hangman with. Statistics
+//           will be printed tot he screen with an empty hangman board and
+//           currentWord printed in underscores initially, but as user makes
+//           correct guesses, the underscores will be filled with the letters
+//           that are guessed correctly until the hangman is complete
+//           (i.e. the user makes too many wrong guesses) or until the user
+//           guesses currentWord correctly. Then, the word will be revealed
+//           to the user and the updated statistics will be printed to the
+//           screen. The user is then promted to play again and if so the
+//           game will repeat as long as the user wants to play or if the
+//           program is ended. Lastly, a goodbye message will be printed to
+//           the screen and the program will end.
+#include "hangman.h"
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+void welcome();
+// will print out welcome message to the screen
+// IN: none
+// MODIFY: none
+// OUT: prints welcome message to the screen
+void goodbye();
+// will print out goodbye message to the screen
+// IN: none
+// MODIFY: none
+// OUT: prints goodbye message to the screen
+
+const char YES = 'y'; // constant character to read if user wants
+                      // to continue playing game
+
+int main()
+{
+   // TODO: declare variables
+  Hangman testGame; // hangman object used to access functions in hangman class
+  char letter; // variable that user inputs into game to test to see if the
+               // letter is in currentWord or not
+  bool gameOver = false; //checks if game is over
+  bool gameWon = false; // checks if user won or lost
+  string filename; // filename that is used to access the file input from user
+  char ans; // variable to check to see if user wants to continue playing game
+
+   // TODO: welcome message
+  welcome();
+   // TODO: ask user to play
+   cout << "Do you want to play? (y/n) ";
+   cin >> ans;
+   
+   // TODO: ask user for filepath 
+   cout << "File please: ";
+   cin >> filename;
+   
+   if(!testGame.initializeFile(filename)) {
+      cout << "file problem...exiting" << endl;
+      return 0;
+   } else
+      cout << "file loaded OK" << endl << endl;
+
+   // play game until the user decides to stop
+   // TODO: update the loop to repeat as long as the user wishes to play 
+   // or until the words run out (update from playing only twice)
+   // need while loop
+   while (tolower(ans) == YES){
+      // display game statistics
+      testGame.displayStatistics();  
+      
+      // randomly chooses new word from list of words
+      testGame.newWord();
+
+      // displays the hangman body
+      testGame.displayGame();
+
+      // resets gameOver and gameWon
+      gameOver = false;
+      gameWon = false;
+
+	   // keep guessing letters until gaveOver or gameWon
+      while (!gameOver) {
+         cout << "What letter? ";
+         cin >> letter;
+
+         // processes the user's guess
+         testGame.guess(toupper(letter), gameOver, gameWon);
+
+         // displays the updated hangman body
+         testGame.displayGame();
+         
+      }
+
+      // displays the word
+      testGame.revealWord();
+
+      // displays whether game was won
+      if (gameWon){
+        cout << "You won and guessed the word correctly!" << endl << endl;
+      }else{
+        cout << "You lost and did not guess the word correctly." << endl;
+      }
+   // display final game statistics 
+      testGame.displayStatistics();
+      // ask if user wants to play again
+      cout << "Do you want to play again? (y/n) ";
+      cin >> ans;
+   }
+   // TODO: goodbye message
+   goodbye();
+   return 0;
+}
+
+void welcome()
+{
+  cout << endl;
+  cout << "Welcome to Hangman!" << endl;
+  cout << "In this game you will need to guess letters for a word " << endl;
+  cout << "by inputing letters available from the alphabet. Once a" << endl;
+  cout << "letter is guessed, the program will determine whether" << endl;
+  cout << "the letter is in the word that is being guessed." << endl;
+  cout << "Goodluck!" << endl << endl;
+}
+
+void goodbye()
+{
+  cout << endl;
+  cout << "Thanks for playing Hangman! Hope you enjoyed playing!" << endl;
+  cout << endl;
+}

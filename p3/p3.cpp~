@@ -1,0 +1,128 @@
+// NAME:     Minh Nguyen
+// FILENAME: p3.cpp
+// DATE:     May 25, 2021
+// PURPOSE:  The game of TicTacToe is a popular game which consists of
+//           alternating between two players, X's and O's, where the players
+//           are trying to get 3 of their pieces in a row on the board. The
+//           board consists of a 3 by 3 area and if there is no winner then
+//           the game results in a tie.
+// INPUT:    reads in integer values input from user to place where they want
+//           their player piece to go on the board
+// PROCESS:  The user will be prompted by a welcome message. Once they have
+//           chosen to play, they will be prompted with a blank board and
+//           will be asked to input two numbers individually for a spot on
+//           board to place the user piece. They will alternate turns, and the
+//           program will check after each turn to see if there is a winner.
+//           If there is a winner, the statistics will be updated and the
+//           program will display the board one last time. Then the statistics
+//           will be printed to the screen and the user will be asked to play
+//           again. If the user wants to play again, the program will repeat
+//           as long as the user wants to play.
+// OUTPUT:   User will be welcomed with a welcome message and then each player
+//           will be prompted to input integer values to input their player
+//           character on the board and will switch off turns. Once someone
+//           has gotten 3 in a row somewhere on the board, or once the board
+//           has been filled with characters and there is no winner, the game
+//           will display a game won message or game tie message. The program
+//           will then print the board to the screen again for one last time
+//           and then then program will display the statistics of wins and
+//           ties and will ask the user if they want to keep playing. If they
+//           continue to play, the program will repeat.
+
+#include "tictactoe.h"
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <cctype>
+using namespace std;
+
+void welcome();
+
+void goodbye();
+
+const char YES = 'y';
+
+int main() {
+   TicTacToe game;
+   int row;
+   int col;
+   char ans;
+   char player;
+   bool playerXTurn = true;
+   bool gameWon = false;
+   int turn;
+   bool invalid = false;
+
+   welcome();
+  
+   cout << "Do you want to play? (y/n) ";
+   cin >> ans;
+  
+   while (tolower(ans) == YES) {
+     turn = 0;
+     while (!gameWon && turn != 9) {
+       game.displayBoard();
+       if (playerXTurn){
+         while (!invalid){
+           player = 'X';
+           cout << player << ", it is your turn." << endl;
+           cout << "Which row? ";
+           cin >> row;
+           cout << "Which column? ";
+           cin >> col;
+           invalid = game.placePiece(player, row, col);
+         }
+         invalid = false;
+         gameWon = game.winner(player);
+         playerXTurn = false;
+         turn++;
+       }else{
+         while (!invalid){
+           player = 'O';
+           cout << player << ", it is your turn." << endl;
+           cout << "Which row? ";
+           cin >> row;
+           cout << "Which column? ";
+           cin >> col;
+           invalid = game.placePiece(player, row, col);
+         }
+         invalid = false;
+         gameWon = game.winner(player);
+         playerXTurn = true;
+         turn++;
+       }
+     }
+     if (turn == 9) {
+       cout << "No winner - it was a tie!" << endl;
+       game.incrementTie();
+     }
+     // if winner is X, update stats; same with O, otherwise tie
+     // display board (final)
+     game.displayBoard();
+     // display stats
+     game.displayStatistics();
+     cout << "Do you want to play again? (y/n) ";
+     cin >> ans;
+     
+     if (tolower(ans) == YES) {
+       game.resetBoard();
+       gameWon = false;
+     }else {
+       goodbye();
+     }
+   }
+}
+
+void welcome() {
+  cout << endl << endl << endl << endl << endl;
+  cout << "Welcome to TicTacToe! In this game players will try to get" << endl;
+  cout << "3 spaces in a row, through vertical, horizontal," << endl;
+  cout << "lines. First to 3 in a row wins a game, and you can keep" << endl;
+  cout << "playing until you want to stop." << endl << endl;
+  
+}
+
+void goodbye() {
+  cout << endl;
+  cout << "Thank you for playing TicTacToe! Have a nice day!" << endl << endl;
+}

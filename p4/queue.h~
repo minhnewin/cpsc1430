@@ -1,0 +1,28 @@
+// queue.h
+
+#ifndef QUEUE_H    
+#define QUEUE_H    
+    
+class Queue {    
+public:    
+   Queue();    
+   Queue(const Queue &);    
+   Queue& operator=(const Queue &);    
+   ~Queue();    
+   void enqueue(int);    
+   void dequeue();    
+   int peek() const;    
+   bool empty() const;    
+   int size() const;
+private:
+   struct Node {    
+      int value;    
+      Node *next;    
+   };    
+   Node *front;    
+   Node *rear;    
+  int numItems;
+  void clear();
+};    
+
+#endif

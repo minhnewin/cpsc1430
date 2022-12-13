@@ -1,0 +1,61 @@
+// tictactoe.h
+
+#ifndef TICTACTOE_H
+#define TICTACTOE_H
+
+class TicTacToe {
+ public:
+  TicTacToe();
+  // default constructor
+  // precondition:
+  // postcondition:
+  ~TicTacToe();
+  // deconstructor
+  // precondition:
+  // postcondition:
+  TicTacToe(const TicTacToe &obj);
+  // copy constructor
+  // precondition:
+  // postcondition:
+  TicTacToe& operator=(const TicTacToe &obj);
+  // overloaded operator
+  // precondition:
+  // postcondition: initializes an object of the same class with
+  //  data from board
+  void displayBoard();                            // prints board to screen
+  // displays the game board with charaters or spaces
+  // precondition:
+  // postcondition:
+  bool placePiece(char piece, int row, int col);  // places X or O on board
+  // will place a character from user inpout into empty board spaces
+  // precondition:
+  // postcondition:
+  bool winner(char piece);             // check rows, cols, diags for piece
+  // checks if the game has been won
+  // precondition:
+  // postcondition:
+  void resetBoard();
+  // resets the board for a new game
+  // precondition:
+  // postcondition:
+  void incrementTie();
+  // increments ties for the statistics
+  // precondition:
+  // postcondition:
+  void displayStatistics();                     // displays game statistics
+  // displays the game statistics
+  // precondition:
+  // postcondition:
+ private:
+  char **board;
+  static const char SPACE = ' ';
+  static const char DASH = '-';
+  static const int SIZE = 3;
+  static const int COL_WIDTH = 3;
+  static const char VERTICAL = '|';
+  int xGamesWon;
+  int oGamesWon;
+  int ties;
+};
+
+#endif

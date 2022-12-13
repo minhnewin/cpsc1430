@@ -1,0 +1,83 @@
+// queue.cpp
+
+#include "queue.h"
+#include <assert.h>
+using namespace std;
+
+Queue::Queue() {
+  front = nullptr;
+  rear = nullptr;
+  numItems = 0;
+}
+
+Queue::~Queue() {
+  clear();
+}
+
+Queue::Queue(const Queue &obj) {
+  numItems = 0;
+  front = nullptr;
+  rear = nullptr;
+  Node * temp;
+  temp = obj.front;
+  while (temp != nullptr){
+    enqueue(temp->value);
+    temp = temp->next;
+  }
+}
+
+Queue& Queue::operator=(const Queue &obj) {
+  if (this != &obj) {
+    clear();
+    numItems = 0;
+    front = nullptr;
+    rear = nullptr;
+    Node * temp;
+    temp = obj.front;
+    while (temp != nullptr){
+      enqueue(temp->value);
+      temp = temp->next;
+    }
+  }
+  return *this;
+}
+
+void Queue::enqueue(int num) {
+  Node * newNode = new Node;
+  newNode->value = num;
+  newNode->next = nullptr;
+  if (empty()) {
+    front = newNode;
+    rear = newNode;
+  } else {
+    rear->next = newNode;
+    rear = newNode;
+  }
+  numItems++;
+}
+
+void Queue::dequeue() {
+  assert(!empty());
+  Node * temp = front;
+  front = front->next;
+  delete temp;
+  numItems--;
+}
+
+int Queue::peek() const {
+  assert(!empty());
+  return front->value;
+}
+
+bool Queue::empty() const {
+  return numItems == 0;
+}
+
+int Queue::size() const {
+  return numItems;
+}
+
+void Queue::clear() {
+  while (!empty())
+    dequeue();
+}

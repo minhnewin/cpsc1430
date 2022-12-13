@@ -1,0 +1,302 @@
+// NAME:     Minh Nguyen
+// FILENAME: p4.cpp
+// DATE:     June 4, 2021
+// PURPOSE:  The game by Silly Little Games is a card game of trying to get
+//           rid of all of the cards in your hand after initially being given
+//           7 cards. There are two players and the game ends when one player
+//           loses all of their cards.
+// INPUT:    The user only is prompted to play or play again.
+// PROCESS:  The game created by Silly Little Games is a card game where
+//           two players switch off comparing the 7 cards they are dealt
+//           to a card that is taken off of a stack of extra cards on the
+//           side. If the player's first card is higher than the one on
+//           top of the discard stack then the player ends their turn
+//           and discards that card onto the top of the discard stack.
+//           If the card the player plays is equal in number to the one
+//           on the top of the discard stack, the player must then take
+//           one card from the deal stack and the player's turn by placing
+//           their card on top of the discard stack. Lastly, If the player's
+//           card is lower in number than the one on the discard stack,
+//           the player must take two cards from the deal stack and the
+//           player's turn is over, placing their card on top of the discard
+//           stack. The first person to play all the cards in their hand wins.
+//           If the player wants to play again, they should be prompted to be
+//           able to play again.
+// OUTPUT:   User will be welcomed with a welcome message. Then the user will
+//           be prompted if they want the game to run or not, and if they
+//           choose yes, then the game will loop automatically. The loop
+//           consists of the cards that each of the players have being printed
+//           to the screen. Then each player will take their turn and it will
+//           alternate until one person gets rid of all of their cards. Then,
+//           once someone wins, the game will be ended and the user will be
+//           shown that a player has won. Then the user is prompted to repeat
+//           and play the game again.
+
+#include "queue.h"
+#include "stack.h"
+#include <iostream>
+#include <iomanip>
+#include <cctype>
+#include <stdlib.h>
+#include <time.h>
+using namespace std;
+
+void welcome();
+// will print out welcome message to the screen
+// IN: none
+// MODIFY: none
+// OUT: prints welcome message to the screen
+void goodbye();
+// will print out goodbye message to the screen
+// IN: none
+// MODIFY: none
+// OUT: prints goodbye message to the screen
+void printHands(Queue &p1, Queue &p2);
+// will print out who has what cards
+// IN: &p1 and &p2
+// MODIFY: will remove and place card back into queue
+// OUT: prints player 1 and player 2 hands
+void takeTurn(Queue &p, Stack &deal, Stack &discard);
+// will take player turn
+// IN: &p, &deal, and &discard
+// MODIFY: depending on the size of p front card will either not take or take
+// cards from deal stack and will place front card from p on the top of the
+// discard stack when done.
+// OUT: displays what player does for turn
+
+const char YES = 'y'; // constant character to read if user wants to continue
+const int SIZE = 51; // max size of the stacks and array
+const int HIGH = 100; // to randomize 100 times
+
+int main()
+{
+   Stack deal(SIZE); // Stack deal object
+   Stack discard(SIZE); // Stack discard object
+   Queue p1; // Queue player 1 queue
+   Queue p2; // Queue player 2 queue 
+
+   int arr[SIZE]; // temporary array to push values into stack array
+
+   bool player1Turn = true; // checks to see whos turn it is
+   bool gameWon = false; // checks if game has been won
+   char ans; // checks to see if player wants to play or continue playing
+   int num; // placeholder integer value to enqueue and push integer values
+           // into stacks and queues
+   int cardNumber; // counter for counting up to 52 cards for the temp array
+   int temp; // temp value to store array integer
+   int rand1; // temp value to store random number from 0 to 51
+   int rand2; // temp value to store random number from 0 to 51
+   int count; // counter variable to count to HIGH for randomizer
+  
+   welcome();
+   cout << "Do you want to play? (y/n) ";
+   cin >> ans;
+   // creating and randomizing the cards
+   cardNumber = 0;
+   for (int i = 1; i < 14; i++) {
+      for (int j = 0; j < 4; j++) {
+         arr[cardNumber] = i;
+         cardNumber++;
+      }
+   }
+   while (tolower(ans) == YES){
+      count = 0;
+      srand(time(NULL));
+      while (count != HIGH) {
+         rand1 = rand() % SIZE + 1;
+         rand2 = rand() % SIZE + 1;
+         temp = arr[rand1];
+         arr[rand1] = arr[rand2];
+         arr[rand2] = temp;
+         count++;
+      }
+      // pushing shuffled cards into deal stack
+      for (int i = 0; i <= SIZE; i++) {
+         deal.push(arr[i]);
+      }
+      // distribute 7 cards one at a time to each player
+      for (int i = 0; i < 7; i++) {
+         num = deal.peek();
+         deal.pop();
+         p1.enqueue(num);
+         num = deal.peek();
+         deal.pop();
+         p2.enqueue(num);
+      }
+      // place one card into discard stack to begin game
+      num = deal.peek();
+      deal.pop();
+      discard.push(num);
+      // game start
+      while (!gameWon){
+         if (player1Turn) {
+            printHands(p1, p2);
+            cout << "Player 1's turn." << endl;
+            takeTurn(p1, deal, discard);
+            gameWon = p1.empty();
+            player1Turn = false;
+         } else {
+            printHands(p1, p2);
+            cout << "Player 2's turn." << endl;
+            takeTurn(p2, deal, discard);
+            gameWon = p2.empty();
+            player1Turn = true;
+         }
+      }
+      // final print
+      printHands(p1, p2);
+      cout << endl;
+      if (p1.empty()) {
+         cout << "Player 1 won!" << endl << endl;
+      } else {
+         cout << "Player 2 won!" << endl << endl;
+      }
+      // play again?
+      cout << "Do you want to play again? (y/n) ";
+      cin >> ans;
+      if (tolower(ans) == YES) {
+         gameWon = false;
+         player1Turn = true;
+         while (!p1.empty())
+            p1.dequeue();
+         while (!p2.empty())
+            p2.dequeue();
+         for (int i = 0; i < deal.size(); i++)
+            deal.pop();
+         for (int i = 0; i < discard.size(); i++)
+            discard.pop();
+      } else {
+         goodbye();
+      }
+   }
+}
+
+void welcome() {
+   cout << endl << endl << endl << endl << endl;
+   cout << "Welcome to Silly Little Game's new Card Game!" << endl;
+   cout << "Each player will be dealt 7 cards initially and each" << endl;
+   cout << "player will take turns comparing their cards to the" << endl;
+   cout << "card on top of the discard stack. If the player's first" << endl;
+   cout << "card is higher than the one on top of the discard stack" << endl;
+   cout << "then the player ends their turn and discards that card" << endl;
+   cout << "onto the top of the discard stack. If the card the player" << endl;
+   cout << "plays is equal in number to the one on the top of the" << endl;
+   cout << "discard stack, the player must then take one card from" << endl;
+   cout << "the deal stack and the player's turn by placing their" << endl;
+   cout << "card on top of the discard stack. Lastly, If the player's" << endl;
+   cout << "card is lower in number than the one on the discard stack" << endl;
+   cout << "the player must take two cards from the deal stack and" << endl;
+   cout << "the player's turn is over, placing their card on top of" << endl;
+   cout << "the discard stack. The first person to play all the cards" << endl;
+   cout << "in their hand wins." << endl << endl << endl;
+}
+
+void goodbye() {
+   cout << endl << endl;
+   cout << "Thank you for playing our new Card Game!" << endl;
+   cout << "Have a nice day!" << endl << endl << endl;
+}
+
+void printHands(Queue &p1, Queue &p2){
+   int num;
+   cout << endl << endl;
+   cout << "Cards in hand." << endl;
+   cout << "--------------" << endl << endl;
+   cout << "Player 1: ";
+   // print player 1 cards queue
+   for (int i = 0; i < p1.size(); i++) {
+      num = p1.peek();
+      cout << num << " ";
+      p1.dequeue();
+      p1.enqueue(num);
+   }
+   cout << endl;
+   cout << "Player 2: ";
+   // print player 2 card queue
+   for (int i = 0; i < p2.size(); i++) {
+      num = p2.peek();
+      cout << num << " ";
+      p2.dequeue();
+      p2.enqueue(num);
+   }
+   cout << endl << endl;
+}
+
+void takeTurn(Queue &p, Stack &deal, Stack &discard) {
+   int num, temp;
+   // check for an empty deal stack
+   if (deal.size() == 0){
+      temp = discard.peek();
+      discard.pop();
+      for (int i = 0; i < discard.size(); i++) {
+         num = discard.peek();
+         discard.pop();
+         deal.push(num);
+      }
+      discard.push(temp);
+   }
+   // comparing
+   cout << "Top of the stack is " << discard.peek() << "." << endl;
+   if (p.peek() > discard.peek()) {
+      cout << "Your card " << p.peek() << " is larger than " << discard.peek();
+      cout << endl;
+      cout << "Good job!" << endl;
+      num = p.peek();
+      p.dequeue();
+      discard.push(num);
+   } else if (p.peek() == discard.peek()) {
+      cout << "Your card is equal to " << discard.peek();
+      cout << endl;
+      cout << "You pick 1 card." << endl;
+      if (deal.size() == 0){
+         temp = discard.peek();
+         discard.pop();
+         for (int i = 0; i < discard.size(); i++) {
+            num = discard.peek();
+            discard.pop();
+            deal.push(num);
+         }
+         discard.push(temp);
+      }
+      num = deal.peek();
+      deal.pop();
+      p.enqueue(num);
+      num = p.peek();
+      p.dequeue();
+      discard.push(num);
+   } else if (p.peek() < discard.peek()) {
+      cout << "Your card " << p.peek() << " is less than " << discard.peek();
+      cout << endl;
+      cout << "You pick 2 cards." << endl;
+      if (deal.size() == 0){
+         temp = discard.peek();
+         discard.pop();
+         for (int i = 0; i < discard.size(); i++) {
+            num = discard.peek();
+            discard.pop();
+            deal.push(num);
+         }
+         discard.push(temp);
+      }
+      num = deal.peek();
+      deal.pop();
+      p.enqueue(num);
+      if (deal.size() == 0){
+         temp = discard.peek();
+         discard.pop();
+         for (int i = 0; i < discard.size(); i++) {
+            num = discard.peek();
+            discard.pop();
+            deal.push(num);
+         }
+         discard.push(temp);
+      }
+      num = deal.peek();
+      deal.pop();
+      p.enqueue(num);
+      num = p.peek();
+      p.dequeue();
+      discard.push(num);
+   }
+}
+

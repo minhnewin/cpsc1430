@@ -1,0 +1,100 @@
+// Minh Nguyen
+// hangman.h
+// May 6, 2021
+// Specification file for the Hangman class
+
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <ctime>
+#include <cctype>
+#include <cstdlib>
+using namespace std;
+
+#ifndef HANGMAN_H
+#define HANGMAN_H
+
+class Hangman
+{
+public:
+   Hangman();
+   // Default constructor
+   // precondition: none
+   // postcondition: initializes all private attributes on the class
+   //  including body array and displaySecond and displayThird for all
+   //  body parts
+   bool initializeFile(string filename);
+   // opens the file and reads it in to poppulate the words array
+   // precondition: filename
+   // postcondition: return of true or false based on being able to read file
+   void displayStatistics();
+   // Displays the statistics of the game
+   // precondition: none
+   // postcondition: prints updated statistics of the game to the screen
+   bool newWord();
+   // randomly generates a number to be used to determine the next random
+   //  word to be played for hangman game
+   // precondition: none
+   // postcondition: assigns currentWord to the new word and returns false
+   //  if there are no words available, also is used to reset game after
+   //  user has won/lost and wanted to play again.
+   void displayGame();
+   // displays the hangman board with currentWord with underscores and letters
+   //  and body parts based on guesses from user input and also letters that
+   //  are available to guess
+   // precondition: none
+   // postcondition: displayes full game board with currentWord in
+   //  underscores and letters and also displays letters available to guess
+   bool guess(char letter, bool& done, bool& won);
+   // checks to see if user input is in currentWord, if so, will replace
+   //  underscores with letters and will update the body array if user guesses
+   //  a wrong guess
+   // precondition: user input letter, bool done and won = false
+   // postcondition: updates body array or currentWord depending on guess
+   void revealWord();
+   // reveals currentWord
+   // precondition: none
+   // postcondition: displays current word
+   
+private:	
+   static const int BODY_SIZE = 9; // const size of body array
+   static const int WORD_LIST_SIZE = 100; // const max number of words for
+                                          // words array
+   static const int ALPHA_SIZE = 26; // const size of alphabet
+   static const int MAX_GUESSES = 7; // const max guesses before hangman
+                                     // is complete
+  
+   struct BodyPart{ // type BodyPart to create hangman
+      string firstLine; // empty hangman board spaces
+      string secondLine; // body parts for hangman
+      string thirdLine; // right arm and leg for hangman
+      bool displaySecond; // checks if secondLine should be printed
+      bool displayThird; // checks if thirdLine should be printed
+   };
+
+   struct WordInfo { // type WordInfo to create words array
+      string word; // words stored here from input file
+      bool isAvailable; // checks to see if word is available for play
+   };
+
+   struct AlphaInfo { // type AlphaInfo to create alphabet array
+      char letter; // alphabetic letter stored from alphabet
+      bool isAvailable; // checks to see if letter is available for play
+   };
+
+   BodyPart body[BODY_SIZE]; // body array with size BODY_SIZE
+   WordInfo words[WORD_LIST_SIZE]; // words array with size WORDS_LIST_SIZE
+   AlphaInfo alphabet[ALPHA_SIZE]; // alphabet array with size ALPHA_SIZE
+
+   int currentWordSize; // stores the size of currentWord
+   int correctCharacters; // stores the number of correct guesses user makes
+   int wrongGuesses; // stored the numer of wrong guesses user makes
+   bool correctGuess; // is true if user made a correct guess
+   string currentWord; // word user is attempting to guess
+   int gamesWon; // stores the number of games won
+   int gamesLost; // stores the number of games lost
+   int numWordsRead; // stores the number words read from input file
+   int numWordsAvailable; // stores the number of words available for play 
+};
+
+#endif
